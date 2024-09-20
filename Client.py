@@ -1,4 +1,5 @@
 from openai import OpenAI
+from pathlib import Path
 
 class Talk:
     def __init__(self):
@@ -30,4 +31,20 @@ class Talk:
             response_format="b64_json"
         )
         return response.data[0].b64_json
+    
+    def tts(self, input = "", voice = "alloy", number = 0, speed = 1.0):
+        speech_file_path = Path(__file__).parent / f"{number}.mp3"
+        response = self.client.audio.speech.create(
+            model="tts-1-hd",
+            voice=voice,
+            response_format="mp3",
+            input=input,
+            speed=speed
+        )
+
+        # Write the response content to a file
+        with open(speech_file_path, "wb") as f:
+            f.write(response.content)
+
+        return speech_file_path
 
